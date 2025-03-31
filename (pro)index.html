@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wheel Spinner App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+    #wheel {
+      border: 16px solid #f3f3f3; 
+      border-radius: 50%;
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .slice {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      clip-path: polygon(100% 0%, 0% 0%, 0% 100%, 100% 100%);
+      transform-origin: 100% 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+    #needle {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 20px solid red;
+    }
+    #spinButton {
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wheel Spinner App</h1>
+  <div id="wheel">
+    <!-- Spinning wheel slices will be added dynamically here -->
+    <div id="needle"></div>
+  </div>
+  
+  <button id="spinButton">Spin</button>
+  <div id="result"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+// Define an array of names (this will be controlled by user input in a real app)
+const names = ["Alice", "Bob", "Charlie", "David", "Eva", "Frank"];
+
+// Setup for the wheel
+const wheel = document.getElementById('wheel');
+const needle = document.getElementById('needle');
+const spinButton = document.getElementById('spinButton');
+const resultDiv = document.getElementById('result');
+
+// Function to generate the slices based on names
+function createWheel() {
+  const sliceAngle = 360 / names.length;  // Calculate angle per slice
+  names.forEach((name, index) => {
+    const slice = document.createElement('div');
+    slice.classList.add('slice');
+    slice.innerText = name;
+    slice.style.transform = `rotate(${sliceAngle * index}deg)`;
+    wheel.appendChild(slice);
+  });
+}
+
+// Function to spin the wheel and control the outcome
+let isSpinning = false;
+
+spinButton.addEventListener('click', function() {
+  if (isSpinning) return;  // Prevent multiple spins at once
+  isSpinning = true;
+  const randomNameIndex = Math.floor(Math.random() * names.length); // You can control this to make the name predictable
+  const targetAngle = 360 * 5 + (randomNameIndex * (360 / names.length));  // 5 spins to make it more dramatic
+
+  // Animate wheel spinning
+  wheel.style.transition = 'transform 4s ease-out';
+  wheel.style.transform = `rotate(${targetAngle}deg)`;
+
+  // After spinning stops, show the result
+  setTimeout(() => {
+    isSpinning = false;
+    const selectedName = names[randomNameIndex];
+    resultDiv.innerText = `The result is: ${selectedName}`;
+  }, 4000);  // Match the duration of the spin animation
+});
+
+// Initialize the wheel when the page loads
+createWheel();
